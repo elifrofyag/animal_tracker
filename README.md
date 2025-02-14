@@ -14,12 +14,14 @@ available on youtube
 * **Development Environment:** Visual Studio 2022 (2019 may work, but not guaranteed)
 
 ## Installation and Setup
+Before setting up, insert your own Google API Key into /AnimalTracker/templates/homepage.html
 
 1. **Download the application:**
    - Download the application archive (e.g., ZIP file).
 
 2. **Extract the files:**
    - Extract the downloaded archive to a new directory on your computer.
+     
 **NOTE**: Skip Step 1 and 2 if you clone the repository from GitHub
 
 3. **Open the Solution:**
