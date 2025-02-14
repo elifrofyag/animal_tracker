@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <title>Animal Tracker Login</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key==geometry"></script>
+    <script>
+        let map;
+        let marker;
+        let circle;
+
+        let safeZoneCenter = { lat: {{ lat }}, lng: {{ lng }}}; // Get the center of your safe zone
+        let safeZoneRadius = {{ rad }}; // Get the radius of your safe zone in meters
+        let pathCoordinates = []; // Array to store path coordinates
+        let gpsData = {{ gps_data| tojson }};
+        let index = gpsData.length - 1;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: safeZoneCenter,
+                zoom: 16,
+            });
+
+            // Define the safe zone as a circle
+            circle = new google.maps.Circle({
+                strokeColor: '#1af04c',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#70cc86',
+                fillOpacity: 0.35,
+                map: map,
+                center: safeZoneCenter,
+                radius: safeZoneRadius
+            });
+
+            // Add a marker for the animal's location
+            marker = new google.maps.Marker({
+                //position: safeZoneCenter,
+                map: map,
+                title: 'Animal Location'
+            });
+
+            // Updating the animal's location every 2.5 seconds
+            setInterval(updateAnimalLocation, 2500);
+        }
+
+        function updateAnimalLocation() {
+
+            if (index >= 0) {
+                // Create new location and update the marker accordingly
+                const newLocation = { lat: gpsData[index].lat, lng: gpsData[index].lng };
+                marker.setPosition(newLocation);
+                map.setCenter(newLocation, 16);
+
+                // Store new location in pathCoordinates array
+                pathCoordinates.push(newLocation);
+
+                // Check if the animal is within the safe zone
+                checkIfAnimalInSafeZone(gpsData[index].date, gpsData[index].time, gpsData[index].lat, gpsData[index].lng);
+
+                // Draw polyline
+                drawPolyline();
+
+                index--;
+            }
+        }
+
+        function checkIfAnimalInSafeZone(date, time, lat, lng) {
+            const distance = google.maps.geometry.spherical.computeDistanceBetween(
+                new google.maps.LatLng(lat, lng),
+                circle.getCenter()
+            );
+
+            if (distance > circle.getRadius()) {
+                triggerAlert(date, time, lat ,lng);
+            }
+        }
+
+        function triggerAlert(date, time, lat, lng) {
+
+            const alertContainer = document.createElement('div');
+            alertContainer.className = 'alert';
+            alertContainer.innerHTML = `
+                            <h3>Alert</h3>
+                            <p> <b><span style="color:#ed6c68">Date: </span></b>${date} </p>
+                            <p><b><span style="color:#ed6c68">Time: </span></b>${time}</p>
+                            <p>Your animal has left the safe zone</p>
+                            <p>Last known location: lat ${lat}, lng ${lng}</p>
+                        `;
+
+            // Insert new alert at the beginning of the alert list
+            const alertList = document.querySelector('.alert-list');
+            alertList.insertBefore(alertContainer, alertList.firstChild);
+        }
+
+        function drawPolyline() {
+            if (pathCoordinates.length > 1) {
+                // Create a polyline from pathCoordinates
+                const path = new google.maps.Polyline({
+                    path: pathCoordinates,
+                    geodesic: true,
+                    strokeColor: '#e8775a',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2
+                });
+
+                // Set the map for the polyline
+                path.setMap(map);
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #c2d6d6;
+        }
+
+        .header {
+            /*display: flex;
+            justify-content: space-between;*/
+            align-items: right;
+            padding: 10px 20px;
+            background-color: #e0ebeb;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 10px;
+            z-index: 1000;
+            border-radius: 0px 8px 8px 0px;
+            width: 115px;
+        }
+
+            .header img {
+                width: 30px;
+                margin-left: 1px;
+            }
+
+            .header a {
+                text-decoration: none;
+                color: #000;
+                font-weight: bold;
+                margin-left: 10px;
+            }
+
+            .header:hover {
+                transform: scale(1.05);
+            }
+
+        .header-1 {
+            /*display: flex;
+        justify-content: space-between;*/
+            align-items: right;
+            padding: 10px 20px;
+            background-color: #e0ebeb;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 80px;
+            z-index: 1000;
+            border-radius: 0px 8px 8px 0px;
+            width: 115px;
+        }
+
+            .header-1 img {
+                width: 30px;
+            }
+
+            .header-1 a {
+                text-decoration: none;
+                color: #000;
+                font-weight: bold;
+                margin-left: 10px;
+            }
+
+            .header-1:hover {
+                transform: scale(1.05);
+            }
+
+
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            margin: 20px 0;
+            margin-left: 160px;
+            position: relative;
+        }
+
+        .map-section {
+            width: 70%;
+            background-color: #e0ebeb;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            height: 610px;
+        }
+
+        #map {
+            width: 100%;
+            height: 420px;
+            border-radius: 8px;
+            height: 500px;
+        }
+
+
+        .set-safe-zone {
+            display: block;
+            background-color: #d2fafa;
+            color: #489999;
+            padding: 14px 28px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            text-align: center;
+        }
+
+            .set-safe-zone:hover {
+                background-color: #c2d6d6;
+                color: #329961;
+                transform: scale(1.05);
+            }
+
+        .feature-section {
+            width: 25%;
+            display: flex;
+            flex-direction: column;
+            height: 650px;
+        }
+
+        .ft-header {
+            background-color: #e0ebeb;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+            .ft-header h2 {
+                margin: 0 0 10px;
+            }
+
+            .ft-header .status-active {
+                color: green;
+                font-weight: bold;
+            }
+
+        .alert-list {
+            background-color: #e0ebeb;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            height: 498px; /* Set a fixed height for the alert list */
+            overflow-y: scroll; /* Make it scrollable */
+        }
+
+        .alert {
+            background-color: #ffdddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+            margin-left: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+            .alert h3 {
+                margin: 0;
+                color: #d9534f;
+            }
+
+            .alert p {
+                margin: 5px 0 0;
+                color: #c27674;
+            }
+
+            .alert:hover {
+                transform: scale(1.05);
+            }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #e0ebeb;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0px;
+            position: relative;
+        }
+    </style>
+</head>
+<body onload="initMap()">
+    <div class="header">
+        <img src="https://cdn-icons-png.flaticon.com/512/12/12638.png" alt="Paw Icon">
+        <a href="/">Log out</a>
+    </div>
+
+    <div class="header-1">
+        <img src="https://cdn-icons-png.flaticon.com/512/456/456212.png" alt="About Us">
+        <a href="/about_us">About us</a>
+    </div>
+
+    <div class="container">
+        <div class="map-section">
+            <h1>Hello, Owner!</h1>
+            <p>You are tracking your animal.</p>
+            <div id="map"></div>
+        </div>
+        <div class="feature-section">
+            <div class="ft-header">
+                <a class="set-safe-zone" href="/set_safe_zone">Reset Safe Zone</a>
+            </div>
+            <div class="alert-list"></div>
+        </div>
+    </div>
+    <div class="footer">
+        <strong>Animal Tracker &#169; 2024</strong>
+    </div>
+</body>
+</html>

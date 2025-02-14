@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Reset Code</title>
+    <style>
+        body {
+            margin-top: 20px;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #c2d6d6;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .card {
+            box-shadow: 0 1px 15px 1px rgba(52,40,104,.08);
+            background-color: #e0ebeb;
+            border: 1px solid #e5e9f2;
+            width: 100%;
+            align-items: center;
+            max-width: 500px;
+            padding: 30px 45px 30px 30px;
+            border-radius: 8px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: .5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: .5rem 1rem;
+            border: none;
+            border-radius: 15px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            margin: 10px 0;
+            background-color: #28a745;
+            font-size: 18px;
+            width: 25%;
+        }
+
+        .btn-lg {
+            font-size: 1.25rem;
+            padding: .75rem 1.5rem;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        .flash-message {
+            color: red;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="text-center mt-4">
+                <h1 class="h2">Enter Reset Code</h1>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="flash-message">
+                    {{ messages[0] }}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <div class="card-body">
+                <form action="/verify_reset_code" method="POST">
+                    <input type="hidden" name="email" value="{{ email }}">
+                    <div class="form-group">
+                        <input type="text" id="reset_code" name="reset_code" class="form-control form-control-lg" placeholder="Enter the code sent to your email" required>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-primary">Verify</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Registration</title>
+    <style>
+        body {
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: url('static/img/background.png') no-repeat center center fixed;
+        }
+
+        .card {
+            box-shadow: 0 1px 15px 1px rgba(52,40,104,.08);
+            background-color: #fff;
+            border: 1px solid #e5e9f2;
+            /* border-radius: .2rem; */
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            align-items: center;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: .5rem;
+            border: 1px solid #ccc;
+            border-radius: .2rem;
+            margin: 10px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: .5rem 1rem;
+            border: none;
+            border-radius: 10px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #28a745;
+        }
+
+        .btn-lg {
+            font-size: 1.25rem;
+            padding: .75rem 1.5rem;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="text-center mt-4">
+            <h1 class="h2">Thank you for signing up!</h1>
+            <p>Your email <b> {{ email }}</b> has been recorded.</p>
+
+            <form action="/">
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-lg btn-primary">Log in</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</body>
+</html>
